@@ -16,7 +16,7 @@ type TaskRequester interface {
 type Task struct {
 	TaskID  int
 	ResChan chan<- Task
-	Data    TaskRequester
+	Job     TaskRequester
 }
 
 // Run task queue and get channel for incoming tasks
@@ -32,14 +32,14 @@ func CreateTask(request TaskRequester) (Task, chan Task) {
 	task := Task{
 		TaskID:  rand.Int(),
 		ResChan: rCh,
-		Data:    request,
+		Job:     request,
 	}
 	return task, rCh
 }
 
 func Worker(id int, in <-chan Task, res chan<- Task) {
 	for t := range in {
-		t.Data.Compute()
+		t.Job.Compute()
 		res <- t
 	}
 }
